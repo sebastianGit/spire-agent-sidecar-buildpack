@@ -3,4 +3,15 @@ set -euo pipefail
 
 BUILD_DIR=$1
 CACHE_DIR=$2
+DEPS_DIR=$3
+DEPS_IDX=$4
+PROFILE_DIR=${5:-}
+
 export BUILDPACK_DIR=`dirname $(readlink -f ${BASH_SOURCE%/*})`
+
+echo "-----> Running go build finalize"
+pushd $BUILDPACK_DIR
+
+popd
+
+$output_dir/finalize "$BUILD_DIR" "$CACHE_DIR" "$DEPS_DIR" "$DEPS_IDX" "$PROFILE_DIR"
