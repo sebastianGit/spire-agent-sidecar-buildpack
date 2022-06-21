@@ -3,14 +3,23 @@ set -euo pipefail
 
 BUILD_DIR=$1
 CACHE_DIR=$2
-export BUILDPACK_DIR=`dirname $(readlink -f ${BASH_SOURCE%/*})`
+
+# shellcheck disable=SC2046
+# shellcheck disable=SC2155
+# shellcheck disable=SC2006
+export BUILDPACK_DIR=`dirname $(readlink -f "${BASH_SOURCE%/*}")`
+
+chmod +x "$BUILDPACK_DIR"/bin/supply
+chmod +x "$BUILDPACK_DIR"/bin/finalize
+chmod +x "$BUILDPACK_DIR"/bin/detect
+chmod +x "$BUILDPACK_DIR"/bin/release
+
 export DEPS_DIR="$BUILD_DIR/.cloudfoundry"
 mkdir -p "$DEPS_DIR/0"
 mkdir -p "$BUILD_DIR/.profile.d"
 echo "export DEPS_DIR=\$HOME/.cloudfoundry" > "$BUILD_DIR/.profile.d/0000_set-deps-dir.sh"
 
-chmod +x $BUILDPACK_DIR/bin/supply
-chmod +x $BUILDPACK_DIR/bin/finalize
 
-$BUILDPACK_DIR/bin/supply "$BUILD_DIR" "$CACHE_DIR" "$DEPS_DIR" 0
-$BUILDPACK_DIR/bin/finalize "$BUILD_DIR" "$CACHE_DIR" "$DEPS_DIR" 0
+
+"$BUILDPACK_DIR"/bin/supply "$BUILD_DIR" "$CACHE_DIR" "$DEPS_DIR" 0
+"$BUILDPACK_DIR"/bin/finalize "$BUILD_DIR" "$CACHE_DIR" "$DEPS_DIR" 0
