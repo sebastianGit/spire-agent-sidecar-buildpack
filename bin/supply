@@ -9,7 +9,7 @@ DEPS_IDX=$4
 
 LAUNCH_CONTENTS='---
 processes:
-  - type: spire-agent
+  - type: "spire-agent-sidecar"
     command: "./spire-agent run -config agent.conf"
     platforms:
       cloudfoundry:
