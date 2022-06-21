@@ -17,9 +17,15 @@ chmod +x "$BUILDPACK_DIR"/bin/release
 export DEPS_DIR="$BUILD_DIR/.cloudfoundry"
 mkdir -p "$DEPS_DIR/0"
 mkdir -p "$BUILD_DIR/.profile.d"
+
 echo "export DEPS_DIR=\$HOME/.cloudfoundry" > "$BUILD_DIR/.profile.d/0000_set-deps-dir.sh"
 
 
-
+echo "Starting the supply phase"
 "$BUILDPACK_DIR"/bin/supply "$BUILD_DIR" "$CACHE_DIR" "$DEPS_DIR" 0
+echo "Ended the supply phase"
+
+echo "Starting the finalize phase"
 "$BUILDPACK_DIR"/bin/finalize "$BUILD_DIR" "$CACHE_DIR" "$DEPS_DIR" 0
+echo "Ended the finalize phase"
+
