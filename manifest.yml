@@ -4,7 +4,7 @@ dependency_deprecation_dates: []
 include_files:
   - VERSION
   - bin/supply
-#  - bin/detect
+  - bin/detect
   - manifest.yml
 language: sidecar
 stack: cflinuxfs3
