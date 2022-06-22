@@ -37,7 +37,6 @@ include_files:
   - spire-agent
   - VERSION
   - bin/compile
-  - bin/detect
   - bin/supply
   - manifest.yml
 language: sidecar
