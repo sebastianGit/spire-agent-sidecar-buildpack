@@ -13,18 +13,17 @@ export BUILDPACK_DIR=`dirname $(readlink -f ${BASH_SOURCE%/*})`
 
 echo "-----> Running SPIRE Agent sidecar supply"
 
-LOC="$DEPS_DIR/$DEPS_IDX"
 echo '---
 processes:
 - type: "sidecar_process"
-  command: "$LOC/spire-agent run -config agent.conf"
+  command: "$DEPS_DIR/$DEPS_IDX/spire-agent run -config agent.conf"
   limits:
     memory: 100
   platforms:
     cloudfoundry:
       sidecar_for: [ "web"]
-' > "$LOC"/launch.yml
+' > "$DEPS_DIR"/"$DEPS_IDX"/launch.yml
 
-mv "$BUILDPACK_DIR"/spire-agent "$LOC"
+mv "$BUILDPACK_DIR"/spire-agent "$DEPS_DIR/$DEPS_IDX"
 
 echo "-----> Wrote sidecar config to $DEPS_DIR/$DEPS_IDX/launch.yml"
