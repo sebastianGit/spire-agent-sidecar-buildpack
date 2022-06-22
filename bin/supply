@@ -7,7 +7,7 @@ CACHE_DIR=$2
 DEPS_DIR=$3
 DEPS_IDX=$4
 
-echo "-----> Running sidecar supply"
+echo "-----> Running SPIRE Agent sidecar supply"
 
 echo '---
 processes:
