@@ -25,7 +25,7 @@ processes:
 ' > "$DEPS_DIR"/"$DEPS_IDX"/launch.yml
 
 
-cp "$BUILDPACK_DIR"/spire-agent "$HOME/.cloudfoundry"
+cp "$BUILDPACK_DIR/spire-agent" "$HOME/.cloudfoundry"
 
 ls -l "$HOME/.cloudfoundry"
 
