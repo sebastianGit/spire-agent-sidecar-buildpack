@@ -6,4 +6,5 @@ include_files:
   - VERSION
   - bin/supply
   - bin/detect
+  - bin/compile
 language: sidecar

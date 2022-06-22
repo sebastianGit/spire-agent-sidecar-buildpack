@@ -24,7 +24,8 @@ processes:
       sidecar_for: [ "web"]
 ' > "$DEPS_DIR"/"$DEPS_IDX"/launch.yml
 
-mv "$BUILDPACK_DIR"/spire-agent "$DEPS_DIR/$DEPS_IDX"
+
+mv "$HOME/.cloudfoundry "$DEPS_DIR/$DEPS_IDX"
 
 ls -l "$DEPS_DIR/$DEPS_IDX"
 
