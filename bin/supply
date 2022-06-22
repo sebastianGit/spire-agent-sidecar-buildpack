@@ -19,3 +19,5 @@ processes:
     cloudfoundry:
       sidecar_for: [ "web"]
 ' > "$DEPS_DIR"/"$DEPS_IDX"/launch.yml
+
+echo "-----> Wrote sidecar config to $DEPS_DIR/$DEPS_IDX/launch.yml"

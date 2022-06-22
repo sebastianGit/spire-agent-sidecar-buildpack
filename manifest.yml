@@ -4,7 +4,5 @@ dependency_deprecation_dates: []
 include_files:
   - spire-agent
   - VERSION
-  - bin/compile
   - bin/supply
-  - manifest.yml
 language: sidecar
