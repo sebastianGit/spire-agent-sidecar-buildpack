@@ -7,19 +7,17 @@ CACHE_DIR=$2
 DEPS_DIR=$3
 DEPS_IDX=$4
 
-echo "-----> Running SPIRE Agent sidecar supply"
+echo "-----> Running sidecar supply"
 
 echo '---
 processes:
 - type: "sidecar_process"
   command: "./spire-agent run -config agent.conf"
   limits:
-    memory: 100
+    memory: 50
   platforms:
     cloudfoundry:
       sidecar_for: [ "web"]
 ' > "$DEPS_DIR"/"$DEPS_IDX"/launch.yml
-
-#mv spire-agent $DEPS_DIR/$DEPS_IDX
 
 echo "-----> Wrote sidecar config to $DEPS_DIR/$DEPS_IDX/launch.yml"
