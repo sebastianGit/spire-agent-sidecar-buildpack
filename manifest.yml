@@ -5,4 +5,5 @@ include_files:
   - spire-agent
   - VERSION
   - bin/supply
+  - bin/detect
 language: sidecar
