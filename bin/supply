@@ -7,6 +7,8 @@ CACHE_DIR=$2
 DEPS_DIR=$3
 DEPS_IDX=$4
 
+export BUILDPACK_DIR=`dirname $(readlink -f ${BASH_SOURCE%/*})`
+
 echo "-----> Running SPIRE Agent sidecar supply"
 
 echo '---
@@ -20,6 +22,6 @@ processes:
       sidecar_for: [ "web"]
 ' > "$DEPS_DIR"/"$DEPS_IDX"/launch.yml
 
-mv spire-agent $DEPS_DIR/$DEPS_IDX
+mv "$BUILDPACK_DIR"/spire-agent $DEPS_DIR/$DEPS_IDX
 
 echo "-----> Wrote sidecar config to $DEPS_DIR/$DEPS_IDX/launch.yml"
