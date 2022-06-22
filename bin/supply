@@ -16,7 +16,7 @@ echo "-----> Running SPIRE Agent sidecar supply"
 echo '---
 processes:
 - type: "spire_agent"
-  command: "$HOME/.cloudfoundry/spire-agent run -config agent.conf"
+  command: "$HOME/spire/spire-agent run -config agent.conf"
   limits:
     memory: 100
   platforms:
@@ -24,9 +24,10 @@ processes:
       sidecar_for: [ "web"]
 ' > "$DEPS_DIR"/"$DEPS_IDX"/launch.yml
 
+mkdir -p "$HOME/spire"
 
-mv "$BUILDPACK_DIR"/spire-agent "$HOME"/.cloudfoundry
+mv "$BUILDPACK_DIR"/spire-agent "$HOME/spire"
 
-ls -l "$HOME"/.cloudfoundry
+ls -l "$HOME/spire"
 
 echo "-----> Wrote sidecar config to $DEPS_DIR/$DEPS_IDX/launch.yml"
