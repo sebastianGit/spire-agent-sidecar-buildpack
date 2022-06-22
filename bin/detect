@@ -2,9 +2,4 @@
 
 set -e
 
-BUILD_DIR=$1
-CACHE_DIR=$2
-DEPS_DIR=$3
-DEPS_IDX=$4
-
-echo "Script called with parameters $@"
+echo "Detect script called with parameters $@"

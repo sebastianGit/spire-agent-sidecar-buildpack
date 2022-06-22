@@ -7,23 +7,24 @@ CACHE_DIR=$2
 DEPS_DIR=$3
 DEPS_IDX=$4
 
-echo "Script called with parameters $@"
+echo "Supply script called with parameters $@"
 
 export BUILDPACK_DIR=`dirname $(readlink -f ${BASH_SOURCE%/*})`
 
 echo "-----> Running SPIRE Agent sidecar supply"
 
+LOC="$DEPS_DIR/$DEPS_IDX"
 echo '---
 processes:
 - type: "sidecar_process"
-  command: "$DEPS_DIR/$DEPS_IDX/spire-agent run -config agent.conf"
+  command: "$LOC/spire-agent run -config agent.conf"
   limits:
     memory: 100
   platforms:
     cloudfoundry:
       sidecar_for: [ "web"]
-' > "$DEPS_DIR"/"$DEPS_IDX"/launch.yml
+' > "$LOC"/launch.yml
 
-mv "$BUILDPACK_DIR"/spire-agent $DEPS_DIR/$DEPS_IDX
+mv "$BUILDPACK_DIR"/spire-agent "$LOC"
 
 echo "-----> Wrote sidecar config to $DEPS_DIR/$DEPS_IDX/launch.yml"
