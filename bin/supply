@@ -15,8 +15,8 @@ echo "-----> Running SPIRE Agent sidecar supply"
 
 echo '---
 processes:
-- type: "sidecar_process"
-  command: "$DEPS_DIR/$DEPS_IDX/spire-agent run -config agent.conf"
+- type: "spire_agent"
+  command: "spire-agent run -config agent.conf"
   limits:
     memory: 100
   platforms:
