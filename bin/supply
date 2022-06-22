@@ -26,4 +26,6 @@ processes:
 
 mv "$BUILDPACK_DIR"/spire-agent "$DEPS_DIR/$DEPS_IDX"
 
+ls -l "$DEPS_DIR/$DEPS_IDX"
+
 echo "-----> Wrote sidecar config to $DEPS_DIR/$DEPS_IDX/launch.yml"
