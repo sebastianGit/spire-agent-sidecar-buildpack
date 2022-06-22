@@ -20,6 +20,6 @@ processes:
       sidecar_for: [ "web"]
 ' > "$DEPS_DIR"/"$DEPS_IDX"/launch.yml
 
-mv spire-agent $DEPS_DIR/$DEPS_IDX
+#mv spire-agent $DEPS_DIR/$DEPS_IDX
 
 echo "-----> Wrote sidecar config to $DEPS_DIR/$DEPS_IDX/launch.yml"
