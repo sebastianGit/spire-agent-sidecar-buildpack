@@ -1,0 +1,8 @@
+default_versions: []
+dependencies: []
+dependency_deprecation_dates: []
+include_files:
+  - spire-agent
+  - VERSION
+  - bin/supply
+language: sidecar
