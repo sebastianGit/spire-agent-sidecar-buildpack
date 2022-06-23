@@ -73,10 +73,10 @@ func (s *Supplier) Run() error {
 		return err
 	}
 
-	if err := s.CopySpireAgentConf(); err != nil {
-		s.Log.Error("Failed to copy spire-agent.conf: %s", err.Error())
-		return err
-	}
+	//if err := s.CopySpireAgentConf(); err != nil {
+	//	s.Log.Error("Failed to copy agent.conf: %s", err.Error())
+	//	return err
+	//}
 
 	if err := s.Setup(); err != nil {
 		s.Log.Error("Could not setup: %s", err.Error())
