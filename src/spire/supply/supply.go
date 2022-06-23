@@ -69,13 +69,13 @@ func New(stager Stager, manifest Manifest, installer Installer, logger *libbuild
 func (s *Supplier) Run() error {
 	s.Log.BeginStep("Supplying spire")
 
-	if err := s.InstallSpireAgent(); err != nil {
-		s.Log.Error("Failed to copy spire-agent: %s", err.Error())
+	if err := s.CopySpireAgentConf(); err != nil {
+		s.Log.Error("Failed to copy agent.conf: %s", err.Error())
 		return err
 	}
 
-	if err := s.CopySpireAgentConf(); err != nil {
-		s.Log.Error("Failed to copy agent.conf: %s", err.Error())
+	if err := s.InstallSpireAgent(); err != nil {
+		s.Log.Error("Failed to copy spire-agent: %s", err.Error())
 		return err
 	}
 
