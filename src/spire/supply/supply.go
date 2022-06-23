@@ -93,7 +93,7 @@ func (s *Supplier) InstallSpireAgent() error {
 		return nil
 	}
 
-	return libbuildpack.CopyFile(filepath.Join(s.Manifest.RootDir(), "bin", "spire-agent"), filepath.Join(s.Stager.DepDir(), "bin", "spire-agent"))
+	return libbuildpack.CopyFile(filepath.Join(s.Manifest.RootDir(), "binaries", "spire-agent"), filepath.Join(s.Stager.DepDir(), "bin", "spire-agent"))
 }
 
 func (s *Supplier) CopySpireAgentConf() error {
@@ -107,7 +107,7 @@ func (s *Supplier) CopySpireAgentConf() error {
 		return err
 	}
 
-	confTmpl := filepath.Join(s.Manifest.RootDir(), "bin", "conf.tmpl")
+	confTmpl := filepath.Join(s.Manifest.RootDir(), "templates", "spire-agent-conf.tmpl")
 	t := template.Must(template.ParseFiles(confTmpl))
 
 	err = t.Execute(f, d)
