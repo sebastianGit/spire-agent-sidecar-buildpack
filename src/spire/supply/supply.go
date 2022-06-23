@@ -101,7 +101,7 @@ func (s *Supplier) CopySpireAgentConf() error {
 		"SpireServerAddress": os.Getenv("SPIRE_SERVER_ADDRESS"),
 	}
 
-	saConfPath := filepath.Join(s.Stager.DepDir(), "bin", "agent.conf")
+	saConfPath := filepath.Join(s.Stager.DepDir(), "agent.conf")
 	f, err := os.Create(saConfPath)
 	if err != nil {
 		return err
