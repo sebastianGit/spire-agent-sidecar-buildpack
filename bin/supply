@@ -32,4 +32,6 @@ echo "-----> Running go build supply"
 pushd $BUILDPACK_DIR
 GOROOT=$GoInstallDir $GoInstallDir/bin/go build -mod=vendor -o $output_dir/supply ./src/spire/supply/cli
 
+echo "-----> Run custom built supply"
 $output_dir/supply "$BUILD_DIR" "$CACHE_DIR" "$DEPS_DIR" "$DEPS_IDX"
+echo "-----> Success running custom built supply"
