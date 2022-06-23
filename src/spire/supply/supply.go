@@ -5,6 +5,7 @@ import (
 	"github.com/cloudfoundry/libbuildpack"
 	"html/template"
 	"io"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -130,6 +131,13 @@ func (s *Supplier) CopySpireAgentConf() error {
 	if err != nil {
 		return err
 	}
+
+	b, err := ioutil.ReadFile(conf)
+	if err != nil {
+		return err
+	}
+
+	s.Log.Info("Spire conf [%s]", string(b))
 
 	return nil
 }
