@@ -98,10 +98,8 @@ func (s *Supplier) InstallSpireAgent() error {
 
 func (s *Supplier) CopySpireAgentConf() error {
 	saConfPathTmpl := filepath.Join(s.Stager.DepDir(), "bin", "spire-agent.conf.tmpl")
-	if exists, err := libbuildpack.FileExists(saConfPathTmpl); err != nil {
+	if _, err := libbuildpack.FileExists(saConfPathTmpl); err != nil {
 		return err
-	} else if exists {
-		return nil
 	}
 
 	d := map[string]interface{}{
