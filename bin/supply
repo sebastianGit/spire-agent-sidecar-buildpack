@@ -14,7 +14,7 @@ echo "-----> Running SPIRE Agent sidecar supply"
 echo '---
 processes:
 - type: "spire_agent"
-  command: "spire-agent run -config /home/vcap/deps/agent.conf"
+  command: "spire-agent run -config agent.conf"
   platforms:
     cloudfoundry:
       sidecar_for: [ "web"]

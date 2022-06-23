@@ -6,5 +6,6 @@ include_files:
   - bin/supply
   - bin/compile
   - binaries/spire-agent
+  - configs/agent.conf
   - templates/spire-agent-conf.tmpl
 language: spire-agent
