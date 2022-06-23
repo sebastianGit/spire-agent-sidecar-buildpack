@@ -2,9 +2,9 @@ default_versions: []
 dependencies: []
 dependency_deprecation_dates: []
 include_files:
-  - bin/spire-agent
-  - bin/conf.tmpl
   - VERSION
   - bin/supply
   - bin/compile
+  - binaries/spire-agent
+  - templates/spire-agent-conf.tmpl
 language: sidecar
