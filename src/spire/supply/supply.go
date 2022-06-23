@@ -97,22 +97,18 @@ func (s *Supplier) InstallSpireAgent() error {
 }
 
 func (s *Supplier) CopySpireAgentConf() error {
-	saConfPathTmpl := filepath.Join(s.Stager.DepDir(), "bin", "spire-agent.conf.tmpl")
-	if _, err := libbuildpack.FileExists(saConfPathTmpl); err != nil {
-		return err
-	}
-
 	d := map[string]interface{}{
 		"SpireServerAddress": os.Getenv("SPIRE_SERVER_ADDRESS"),
 	}
 
-	saConfPath := filepath.Join(s.Stager.DepDir(), "bin", "spire-agent.conf")
+	saConfPath := filepath.Join(s.Stager.DepDir(), "bin", "agent.conf")
 	f, err := os.Create(saConfPath)
 	if err != nil {
 		return err
 	}
 
-	t := template.Must(template.ParseFiles(saConfPathTmpl))
+	confTmpl := filepath.Join(s.Manifest.RootDir(), "bin", "conf.tmpl")
+	t := template.Must(template.ParseFiles(confTmpl))
 
 	err = t.Execute(f, d)
 	if err != nil {
@@ -124,7 +120,7 @@ func (s *Supplier) CopySpireAgentConf() error {
 		return err
 	}
 
-	return libbuildpack.CopyFile(filepath.Join(s.Manifest.RootDir(), "bin", "spire-agent.conf"), filepath.Join(s.Stager.DepDir(), "bin", "spire-agent.conf"))
+	return nil
 }
 
 func (s *Supplier) Setup() error {
