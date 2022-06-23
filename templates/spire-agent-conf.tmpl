@@ -1,8 +1,8 @@
 agent {
   server_address    = "{{ .SpireServerAddress }}"
-  server_port       = 8081
+  server_port       = {{ .SpireServerPort }}
   log_level         = "DEBUG"
-  trust_domain      = "mesh.net.sap"
+  trust_domain      = "{{ .TrustDomain }}"
   trust_bundle_path = "bundle.crt"
 }
 

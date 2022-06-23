@@ -5,7 +5,6 @@ import (
 	"github.com/cloudfoundry/libbuildpack"
 	"html/template"
 	"io"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -110,6 +109,8 @@ func (s *Supplier) CopySpireAgentConf() error {
 
 	d := map[string]interface{}{
 		"SpireServerAddress": os.Getenv("SPIRE_SERVER_ADDRESS"),
+		"SpireServerPort":    os.Getenv("SPIRE_SERVER_PORT"),
+		"TrustDomain":        os.Getenv("SPIRE_TRUST_DOMAIN"),
 	}
 
 	f, err := os.Create(conf)
@@ -131,13 +132,6 @@ func (s *Supplier) CopySpireAgentConf() error {
 	if err != nil {
 		return err
 	}
-
-	b, err := ioutil.ReadFile(conf)
-	if err != nil {
-		return err
-	}
-
-	s.Log.Info("Spire conf [%s]", string(b))
 
 	return nil
 }
