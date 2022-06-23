@@ -102,7 +102,8 @@ func (s *Supplier) CopySpireAgentConf() error {
 	}
 
 	dir := filepath.Join("home", "vcap", "deps")
-	if err := os.MkdirAll(string(os.PathSeparator)+dir, os.ModePerm); err != nil {
+	dir = string(os.PathSeparator) + dir
+	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
 		return err
 	}
 
