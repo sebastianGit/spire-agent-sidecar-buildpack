@@ -7,4 +7,4 @@ include_files:
   - bin/compile
   - binaries/spire-agent
   - templates/spire-agent-conf.tmpl
-language: sidecar
+language: spire-agent
