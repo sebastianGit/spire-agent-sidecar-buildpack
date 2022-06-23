@@ -3,6 +3,7 @@ package supply
 import (
 	"fmt"
 	"github.com/cloudfoundry/libbuildpack"
+	"html/template"
 	"io"
 	"os"
 	"os/exec"
@@ -72,6 +73,11 @@ func (s *Supplier) Run() error {
 		return err
 	}
 
+	if err := s.CopySpireAgentConf(); err != nil {
+		s.Log.Error("Failed to copy spire-agent.conf: %s", err.Error())
+		return err
+	}
+
 	if err := s.Setup(); err != nil {
 		s.Log.Error("Could not setup: %s", err.Error())
 		return err
@@ -88,6 +94,34 @@ func (s *Supplier) InstallSpireAgent() error {
 	}
 
 	return libbuildpack.CopyFile(filepath.Join(s.Manifest.RootDir(), "bin", "spire-agent"), filepath.Join(s.Stager.DepDir(), "bin", "spire-agent"))
+}
+
+func (s *Supplier) CopySpireAgentConf() error {
+	saConfPathTmpl := filepath.Join(s.Stager.DepDir(), "bin", "spire-agent.conf.tmpl")
+	if exists, err := libbuildpack.FileExists(saConfPathTmpl); err != nil {
+		return err
+	} else if exists {
+		return nil
+	}
+
+	d := map[string]interface{}{
+		"SpireServerAddress": os.Getenv("SPIRE_SERVER_ADDRESS"),
+	}
+
+	saConfPath := filepath.Join(s.Stager.DepDir(), "bin", "spire-agent.conf")
+	f, err := os.Create(saConfPath)
+	if err != nil {
+		return err
+	}
+
+	t := template.Must(template.ParseFiles(saConfPathTmpl))
+
+	err = t.Execute(f, d)
+	if err != nil {
+		return err
+	}
+
+	return libbuildpack.CopyFile(filepath.Join(s.Manifest.RootDir(), "bin", "spire-agent.conf"), filepath.Join(s.Stager.DepDir(), "bin", "spire-agent.conf"))
 }
 
 func (s *Supplier) Setup() error {
