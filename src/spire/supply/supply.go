@@ -121,6 +121,11 @@ func (s *Supplier) CopySpireAgentConf() error {
 		return err
 	}
 
+	err = f.Close()
+	if err != nil {
+		return err
+	}
+
 	return libbuildpack.CopyFile(filepath.Join(s.Manifest.RootDir(), "bin", "spire-agent.conf"), filepath.Join(s.Stager.DepDir(), "bin", "spire-agent.conf"))
 }
 
