@@ -3,6 +3,7 @@ dependencies: []
 dependency_deprecation_dates: []
 include_files:
   - bin/spire-agent
+  - bin/spire-agent.conf
   - bin/spire-agent.conf.tmpl
   - VERSION
   - bin/supply
