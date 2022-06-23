@@ -14,7 +14,7 @@ echo "-----> Running SPIRE Agent sidecar supply"
 echo '---
 processes:
 - type: "spire_agent"
-  command: "$DEPS_DIR/$DEPS_IDX/bin/spire-agent run -config $DEPS_DIR/$DEPS_IDX/binagent.conf"
+  command: "$DEPS_DIR/$DEPS_IDX/bin/spire-agent run -config $DEPS_DIR/$DEPS_IDX/bin/agent.conf"
   platforms:
     cloudfoundry:
       sidecar_for: [ "web"]
