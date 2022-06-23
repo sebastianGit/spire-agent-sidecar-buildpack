@@ -11,19 +11,14 @@ echo "Supply script called with parameters $@"
 
 echo "-----> Running SPIRE Agent sidecar supply"
 
-echo '---
+echo "---
 processes:
-- type: "spire_agent"
-  command: "spire-agent run -config $DEPS_DIR/$DEPS_IDX/agent.conf"
+- type: \"spire_agent\"
+  command: \"spire-agent run -config $DEPS_DIR/$DEPS_IDX/agent.conf\"
   platforms:
     cloudfoundry:
-      sidecar_for: [ "web"]
-#- type: "app-proxy-envoy"
-#  command: "/etc/cf-assets/envoy/envoy -c /home/vcap/app/custom-envoy.yaml --base-id 45 --log-level debug --component-log-level router:trace,upstream:debug,connection:trace,grpc:trace,forward_proxy:debug,ext_authz:debug"
-#  platforms:
-#    cloudfoundry:
-#      sidecar_for: [ "web"]
-' > "$DEPS_DIR"/"$DEPS_IDX"/launch.yml
+      sidecar_for: [ \"web\"]
+" > "$DEPS_DIR"/"$DEPS_IDX"/launch.yml
 
 echo "-----> Wrote sidecar config to $DEPS_DIR/$DEPS_IDX/launch.yml"
 
