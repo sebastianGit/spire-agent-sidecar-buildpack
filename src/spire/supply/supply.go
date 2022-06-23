@@ -93,7 +93,7 @@ func (s *Supplier) InstallSpireAgent() error {
 		return nil
 	}
 
-	return libbuildpack.CopyFile(filepath.Join(s.Manifest.RootDir(), "binaries", "spire-agent"), filepath.Join(s.Stager.DepDir(), "bin", "spire-agent"))
+	return libbuildpack.CopyFile(filepath.Join(s.Manifest.RootDir(), "bin", "spire-agent"), filepath.Join(s.Stager.DepDir(), "binaries", "spire-agent"))
 }
 
 func (s *Supplier) CopySpireAgentConf() error {
