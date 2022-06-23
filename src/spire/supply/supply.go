@@ -107,6 +107,8 @@ func (s *Supplier) CopySpireAgentConf() error {
 		return err
 	}
 
+	s.Log.Error("Spire agent conf: %s", saConfPath)
+
 	confTmpl := filepath.Join(s.Manifest.RootDir(), "templates", "spire-agent-conf.tmpl")
 	t := template.Must(template.ParseFiles(confTmpl))
 
