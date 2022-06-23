@@ -98,10 +98,8 @@ func (s *Supplier) InstallSpireAgent() error {
 
 func (s *Supplier) CopySpireAgentConf() error {
 	conf := filepath.Join(s.Stager.DepDir(), "bin", "agent.conf")
-	if exists, err := libbuildpack.FileExists(conf); err != nil {
+	if _, err := libbuildpack.FileExists(conf); err != nil {
 		return err
-	} else if exists {
-		return nil
 	}
 
 	err := libbuildpack.CopyFile(filepath.Join(s.Manifest.RootDir(), "configs", "agent.conf"), conf)
