@@ -73,10 +73,10 @@ func (s *Supplier) Run() error {
 		return err
 	}
 
-	//if err := s.CopySpireAgentConf(); err != nil {
-	//	s.Log.Error("Failed to copy agent.conf: %s", err.Error())
-	//	return err
-	//}
+	if err := s.CopySpireAgentConf(); err != nil {
+		s.Log.Error("Failed to copy agent.conf: %s", err.Error())
+		return err
+	}
 
 	if err := s.Setup(); err != nil {
 		s.Log.Error("Could not setup: %s", err.Error())
@@ -93,7 +93,7 @@ func (s *Supplier) InstallSpireAgent() error {
 		return nil
 	}
 
-	return libbuildpack.CopyFile(filepath.Join(s.Manifest.RootDir(), "bin", "spire-agent"), filepath.Join(s.Stager.DepDir(), "bin", "spire-agent"))
+	return libbuildpack.CopyFile(filepath.Join(s.Manifest.RootDir(), "binaries", "spire-agent"), filepath.Join(s.Stager.DepDir(), "bin", "spire-agent"))
 }
 
 func (s *Supplier) CopySpireAgentConf() error {
