@@ -80,6 +80,11 @@ func (s *Supplier) Run() error {
 		return err
 	}
 
+	if err := s.InstallSpireAgentPlugins(); err != nil {
+		s.Log.Error("Failed to copy spire-agent plugins: %s", err.Error())
+		return err
+	}
+
 	if err := s.CreateLaunchForSidecars(); err != nil {
 		s.Log.Error("Failed to create the sidecar processes: %s", err.Error())
 		return err
@@ -101,6 +106,27 @@ func (s *Supplier) InstallSpireAgent() error {
 	}
 
 	return libbuildpack.CopyFile(filepath.Join(s.Manifest.RootDir(), "binaries", "spire-agent"), filepath.Join(s.Stager.DepDir(), "bin", "spire-agent"))
+}
+
+func (s *Supplier) InstallSpireAgentPlugins() error {
+	pluginsDir := filepath.Join(s.Manifest.RootDir(), "binaries", "plugins")
+
+	var files []string
+	err := filepath.Walk(pluginsDir, func(path string, info os.FileInfo, err error) error {
+		files = append(files, info.Name())
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+	for _, file := range files {
+		err := libbuildpack.CopyFile(filepath.Join(s.Manifest.RootDir(), "binaries", "plugins", file), filepath.Join(s.Stager.DepDir(), "bin", file))
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (s *Supplier) CreateLaunchForSidecars() error {
@@ -184,11 +210,17 @@ func (s *Supplier) CopySpireAgentConf() error {
 	confTmpl := filepath.Join(s.Manifest.RootDir(), "templates", "spire-agent-conf.tmpl")
 	t := template.Must(template.ParseFiles(confTmpl))
 
-	err = t.Execute(f, map[string]interface{}{
+	data := map[string]interface{}{
 		"SpireServerAddress": os.Getenv("SPIRE_SERVER_ADDRESS"),
 		"SpireServerPort":    os.Getenv("SPIRE_SERVER_PORT"),
 		"TrustDomain":        os.Getenv("SPIRE_TRUST_DOMAIN"),
-	})
+	}
+
+	cfSvidStoreEnv := os.Getenv("SPIRE_CLOUDFOUNDRY_SVID_STORE")
+	if strings.ToLower(cfSvidStoreEnv) == "yes" {
+		data["CloudFoundrySVIDStoreEnabled"] = true
+	}
+	err = t.Execute(f, data)
 	if err != nil {
 		return err
 	}
