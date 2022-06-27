@@ -80,10 +80,10 @@ func (s *Supplier) Run() error {
 		return err
 	}
 
-	if err := s.InstallSpireAgentPlugins(); err != nil {
-		s.Log.Error("Failed to copy spire-agent plugins: %s", err.Error())
-		return err
-	}
+	//if err := s.InstallSpireAgentPlugins(); err != nil {
+	//	s.Log.Error("Failed to copy spire-agent plugins: %s", err.Error())
+	//	return err
+	//}
 
 	if err := s.CreateLaunchForSidecars(); err != nil {
 		s.Log.Error("Failed to create the sidecar processes: %s", err.Error())
