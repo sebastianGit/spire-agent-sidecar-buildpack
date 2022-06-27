@@ -118,7 +118,7 @@ func (s *Supplier) InstallSpireAgentPlugins() error {
 		}
 		dstPath := filepath.Join(s.Stager.DepDir(), "bin", info.Name())
 		if errCopy := libbuildpack.CopyFile(srcPath, dstPath); errCopy != nil {
-			s.Log.Error("Can't copy file: %s; Source `%s`, destination `%s`", err.Error(), srcPath, dstPath)
+			s.Log.Error("Can't copy file: %s; Source `%s`, destination `%s`", errCopy.Error(), srcPath, dstPath)
 			return errCopy
 		}
 
