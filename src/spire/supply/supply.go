@@ -111,19 +111,15 @@ func (s *Supplier) InstallSpireAgent() error {
 func (s *Supplier) InstallSpireAgentPlugins() error {
 	pluginsDir := filepath.Join(s.Manifest.RootDir(), "binaries", "plugins")
 
-	var files []string
 	err := filepath.Walk(pluginsDir, func(path string, info os.FileInfo, err error) error {
-		files = append(files, info.Name())
+		err = libbuildpack.CopyFile(path, filepath.Join(s.Stager.DepDir(), "bin", info.Name()))
+		if err != nil {
+			return err
+		}
 		return nil
 	})
 	if err != nil {
 		return err
-	}
-	for _, file := range files {
-		err := libbuildpack.CopyFile(filepath.Join(s.Manifest.RootDir(), "binaries", "plugins", file), filepath.Join(s.Stager.DepDir(), "bin", file))
-		if err != nil {
-			return err
-		}
 	}
 
 	return nil
