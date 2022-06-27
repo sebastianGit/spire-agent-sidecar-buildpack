@@ -112,6 +112,9 @@ func (s *Supplier) InstallSpireAgentPlugins() error {
 	pluginsDir := filepath.Join(s.Manifest.RootDir(), "binaries", "plugins")
 
 	err := filepath.Walk(pluginsDir, func(srcPath string, info os.FileInfo, err error) error {
+		if info.IsDir() {
+			return nil
+		}
 		if err != nil {
 			s.Log.Error("Can't copy file: %s", err.Error())
 			return err
