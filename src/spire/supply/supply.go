@@ -156,7 +156,7 @@ func (s *Supplier) CreateLaunchForSidecars() error {
 	}
 
 	envoyProxy := os.Getenv("SPIRE_ENVOY_PROXY")
-	if strings.ToLower(envoyProxy) == "yes" {
+	if strings.ToLower(envoyProxy) == "true" {
 		envoyConfig := filepath.Join(s.Stager.DepDir(), "envoy-config.yaml")
 		if _, err := libbuildpack.FileExists(launch); err != nil {
 			return err
@@ -223,7 +223,7 @@ func (s *Supplier) CopySpireAgentConf() error {
 	}
 
 	cfSvidStoreEnv := os.Getenv("SPIRE_CLOUDFOUNDRY_SVID_STORE")
-	if strings.ToLower(cfSvidStoreEnv) == "yes" {
+	if strings.ToLower(cfSvidStoreEnv) == "true" {
 		data["CloudFoundrySVIDStoreEnabled"] = true
 	}
 	err = t.Execute(f, data)
