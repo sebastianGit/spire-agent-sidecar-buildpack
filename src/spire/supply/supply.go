@@ -170,7 +170,7 @@ func (s *Supplier) CreateLaunchForSidecars() error {
 		envoyProxyConfigTmpl := filepath.Join(s.Manifest.RootDir(), "templates", "custom-envoy-conf.tmpl")
 		envoyProxyConfig := template.Must(template.ParseFiles(envoyProxyConfigTmpl))
 		err = envoyProxyConfig.Execute(envoyConfigFile, map[string]interface{}{
-			"SpiffeID":    os.Getenv("SPIRE_SPIFFE_ID"),
+			"SpiffeID":    os.Getenv("SPIRE_APPLICATION_SPIFFE_ID"),
 			"TrustDomain": os.Getenv("SPIRE_TRUST_DOMAIN"),
 		})
 		if err != nil {
