@@ -1,0 +1,5 @@
+- type: "app-proxy-envoy"
+  command: "/etc/cf-assets/envoy/envoy -c /home/vcap/deps/0/envoy-config.yaml --base-id {{ .BaseId }} --log-level debug --component-log-level router:trace,upstream:debug,connection:trace,grpc:trace,forward_proxy:debug,ext_authz:debug"
+  platforms:
+    cloudfoundry:
+      sidecar_for: [ "web"]

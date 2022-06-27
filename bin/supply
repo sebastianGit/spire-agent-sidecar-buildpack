@@ -9,23 +9,23 @@ DEPS_IDX=$4
 
 echo "Supply script called with parameters $@"
 
-echo "-----> Running SPIRE Agent sidecar supply"
+#echo "-----> Running SPIRE Agent sidecar supply"
 
-echo "---
-processes:
-- type: \"spire_agent\"
-  command: \"spire-agent run -config /home/vcap/deps/0/bin/agent.conf\"
-  platforms:
-    cloudfoundry:
-      sidecar_for: [ \"web\"]
-- type: \"app-proxy-envoy\"
-  command: \"/etc/cf-assets/envoy/envoy -c /home/vcap/app/custom-envoy.yaml --base-id 45 --log-level debug --component-log-level router:trace,upstream:debug,connection:trace,grpc:trace,forward_proxy:debug,ext_authz:debug\"
-  platforms:
-    cloudfoundry:
-      sidecar_for: [ \"web\"]
-" > "$DEPS_DIR"/"$DEPS_IDX"/launch.yml
-
-echo "-----> Wrote sidecar config to $DEPS_DIR/$DEPS_IDX/launch.yml"
+#echo "---
+#processes:
+#- type: \"spire_agent\"
+#  command: \"spire-agent run -config /home/vcap/deps/0/bin/agent.conf\"
+#  platforms:
+#    cloudfoundry:
+#      sidecar_for: [ \"web\"]
+#- type: \"app-proxy-envoy\"
+#  command: \"/etc/cf-assets/envoy/envoy -c /home/vcap/app/custom-envoy.yaml --base-id 45 --log-level debug --component-log-level router:trace,upstream:debug,connection:trace,grpc:trace,forward_proxy:debug,ext_authz:debug\"
+#  platforms:
+#    cloudfoundry:
+#      sidecar_for: [ \"web\"]
+#" > "$DEPS_DIR"/"$DEPS_IDX"/launch.yml
+#
+#echo "-----> Wrote sidecar config to $DEPS_DIR/$DEPS_IDX/launch.yml"
 
 export BUILDPACK_DIR=`dirname $(readlink -f ${BASH_SOURCE%/*})`
 source "$BUILDPACK_DIR/scripts/install_go.sh"

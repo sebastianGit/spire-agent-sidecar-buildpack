@@ -5,9 +5,11 @@ import (
 	"github.com/cloudfoundry/libbuildpack"
 	"html/template"
 	"io"
+	"math/rand"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 )
 
 type Command interface {
@@ -78,6 +80,11 @@ func (s *Supplier) Run() error {
 		return err
 	}
 
+	if err := s.CreateLaunchForSidecars(); err != nil {
+		s.Log.Error("Failed to create the sidecar processes: %s", err.Error())
+		return err
+	}
+
 	if err := s.Setup(); err != nil {
 		s.Log.Error("Could not setup: %s", err.Error())
 		return err
@@ -96,21 +103,75 @@ func (s *Supplier) InstallSpireAgent() error {
 	return libbuildpack.CopyFile(filepath.Join(s.Manifest.RootDir(), "binaries", "spire-agent"), filepath.Join(s.Stager.DepDir(), "bin", "spire-agent"))
 }
 
-func (s *Supplier) CopySpireAgentConf() error {
-	conf := filepath.Join(s.Stager.DepDir(), "bin", "agent.conf")
-	if _, err := libbuildpack.FileExists(conf); err != nil {
+func (s *Supplier) CreateLaunchForSidecars() error {
+	launch := filepath.Join(s.Stager.DepDir(), "launch.yml")
+	if _, err := libbuildpack.FileExists(launch); err != nil {
 		return err
 	}
 
-	err := libbuildpack.CopyFile(filepath.Join(s.Manifest.RootDir(), "configs", "agent.conf"), conf)
+	launchFile, err := os.Create(launch)
 	if err != nil {
 		return err
 	}
 
-	d := map[string]interface{}{
-		"SpireServerAddress": os.Getenv("SPIRE_SERVER_ADDRESS"),
-		"SpireServerPort":    os.Getenv("SPIRE_SERVER_PORT"),
-		"TrustDomain":        os.Getenv("SPIRE_TRUST_DOMAIN"),
+	launchFile.WriteString("---\nprocesses:\n")
+
+	spireAgentSidecarTmpl := filepath.Join(s.Manifest.RootDir(), "templates", "spire_agent-sidecar.tmpl")
+	spireAgentSidecar := template.Must(template.ParseFiles(spireAgentSidecarTmpl))
+	err = spireAgentSidecar.Execute(launchFile, map[string]interface{}{})
+	if err != nil {
+		return err
+	}
+
+	envoyProxy := os.Getenv("SPIRE_ENVOY_PROXY")
+	if strings.ToLower(envoyProxy) == "yes" {
+		envoyConfig := filepath.Join(s.Stager.DepDir(), "envoy-config.yaml")
+		if _, err := libbuildpack.FileExists(launch); err != nil {
+			return err
+		}
+
+		envoyConfigFile, err := os.Create(envoyConfig)
+		if err != nil {
+			return err
+		}
+
+		envoyProxyConfigTmpl := filepath.Join(s.Manifest.RootDir(), "templates", "custom-envoy-conf.tmpl")
+		envoyProxyConfig := template.Must(template.ParseFiles(envoyProxyConfigTmpl))
+		err = envoyProxyConfig.Execute(envoyConfigFile, map[string]interface{}{
+			"SpiffeID":    os.Getenv("SPIRE_SPIFFE_ID"),
+			"TrustDomain": os.Getenv("SPIRE_TRUST_DOMAIN"),
+		})
+		if err != nil {
+			return err
+		}
+
+		err = envoyConfigFile.Close()
+		if err != nil {
+			return err
+		}
+
+		envoyProxySidecarTmpl := filepath.Join(s.Manifest.RootDir(), "templates", "envoy_proxy-sidecar.tmpl")
+		envoyProxySidecar := template.Must(template.ParseFiles(envoyProxySidecarTmpl))
+		err = envoyProxySidecar.Execute(launchFile, map[string]interface{}{
+			"BaseId": rand.Int63n(65000),
+		})
+		if err != nil {
+			return err
+		}
+	}
+
+	err = launchFile.Close()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *Supplier) CopySpireAgentConf() error {
+	conf := filepath.Join(s.Stager.DepDir(), "spire-agent.conf")
+	if _, err := libbuildpack.FileExists(conf); err != nil {
+		return err
 	}
 
 	f, err := os.Create(conf)
@@ -123,7 +184,11 @@ func (s *Supplier) CopySpireAgentConf() error {
 	confTmpl := filepath.Join(s.Manifest.RootDir(), "templates", "spire-agent-conf.tmpl")
 	t := template.Must(template.ParseFiles(confTmpl))
 
-	err = t.Execute(f, d)
+	err = t.Execute(f, map[string]interface{}{
+		"SpireServerAddress": os.Getenv("SPIRE_SERVER_ADDRESS"),
+		"SpireServerPort":    os.Getenv("SPIRE_SERVER_PORT"),
+		"TrustDomain":        os.Getenv("SPIRE_TRUST_DOMAIN"),
+	})
 	if err != nil {
 		return err
 	}
