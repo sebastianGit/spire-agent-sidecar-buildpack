@@ -80,10 +80,10 @@ func (s *Supplier) Run() error {
 		return err
 	}
 
-	//if err := s.InstallSpireAgentPlugins(); err != nil {
-	//	s.Log.Error("Failed to copy spire-agent plugins: %s", err.Error())
-	//	return err
-	//}
+	if err := s.InstallSpireAgentPlugins(); err != nil {
+		s.Log.Error("Failed to copy spire-agent plugins: %s", err.Error())
+		return err
+	}
 
 	if err := s.CreateLaunchForSidecars(); err != nil {
 		s.Log.Error("Failed to create the sidecar processes: %s", err.Error())
@@ -111,11 +111,18 @@ func (s *Supplier) InstallSpireAgent() error {
 func (s *Supplier) InstallSpireAgentPlugins() error {
 	pluginsDir := filepath.Join(s.Manifest.RootDir(), "binaries", "plugins")
 
-	err := filepath.Walk(pluginsDir, func(path string, info os.FileInfo, err error) error {
-		err = libbuildpack.CopyFile(path, filepath.Join(s.Stager.DepDir(), "bin", info.Name()))
+	err := filepath.Walk(pluginsDir, func(srcPath string, info os.FileInfo, err error) error {
 		if err != nil {
+			s.Log.Error("Can't copy file: %s", err.Error())
 			return err
 		}
+		dstPath := filepath.Join(s.Stager.DepDir(), "bin", info.Name())
+		if errCopy := libbuildpack.CopyFile(srcPath, dstPath); errCopy != nil {
+			s.Log.Error("Can't copy file: %s; Source `%s`, destination `%s`", err.Error(), srcPath, dstPath)
+			return errCopy
+		}
+
+		s.Log.Info("File copied with success from source `%s` to destination `%s`", srcPath, dstPath)
 		return nil
 	})
 	if err != nil {
