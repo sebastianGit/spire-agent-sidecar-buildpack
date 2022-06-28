@@ -192,7 +192,7 @@ func (s *Supplier) CreateLaunchForSidecars() error {
 		return err
 	}
 
-	envoyProxy := utils.EnvWithDefault(spireEnvoyProxyEnv, "false")
+	envoyProxy := utils.VcapOrEnvWithDefault(spireEnvoyProxyEnv, "false")
 	if strings.ToLower(envoyProxy) == "true" {
 		envoyConfig := filepath.Join(s.Stager.DepDir(), "envoy-config.yaml")
 		if _, err := libbuildpack.FileExists(launch); err != nil {
@@ -207,11 +207,11 @@ func (s *Supplier) CreateLaunchForSidecars() error {
 		envoyProxyConfigTmpl := filepath.Join(s.Manifest.RootDir(), "templates", "custom-envoy-conf.tmpl")
 		envoyProxyConfig := template.Must(template.ParseFiles(envoyProxyConfigTmpl))
 
-		std, err := utils.Env(spireTrustDomainEnv)
+		std, err := utils.VcapOrEnv(spireTrustDomainEnv)
 		if err != nil {
 			return err
 		}
-		sasid, err := utils.Env(spireApplicationSpiffeIdEnv)
+		sasid, err := utils.VcapOrEnv(spireApplicationSpiffeIdEnv)
 		if err != nil {
 			return err
 		}
@@ -263,15 +263,15 @@ func (s *Supplier) CopySpireAgentConf() error {
 	confTmpl := filepath.Join(s.Manifest.RootDir(), "templates", "spire-agent-conf.tmpl")
 	t := template.Must(template.ParseFiles(confTmpl))
 
-	ssa, err := utils.Env(spireServerAddressEnv)
+	ssa, err := utils.VcapOrEnv(spireServerAddressEnv)
 	if err != nil {
 		return err
 	}
-	ssp, err := utils.Env(spireServerPortEnv)
+	ssp, err := utils.VcapOrEnv(spireServerPortEnv)
 	if err != nil {
 		return err
 	}
-	std, err := utils.Env(spireTrustDomainEnv)
+	std, err := utils.VcapOrEnv(spireTrustDomainEnv)
 	if err != nil {
 		return err
 	}
@@ -282,7 +282,7 @@ func (s *Supplier) CopySpireAgentConf() error {
 		"TrustDomain":        std,
 	}
 
-	cfSvidStoreEnv := utils.EnvWithDefault(spireCloudFoundrySVIDStoreEnv, "false")
+	cfSvidStoreEnv := utils.VcapOrEnvWithDefault(spireCloudFoundrySVIDStoreEnv, "false")
 	if strings.ToLower(cfSvidStoreEnv) == "true" {
 		data["CloudFoundrySVIDStoreEnabled"] = true
 	}
