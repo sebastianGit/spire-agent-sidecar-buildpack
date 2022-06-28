@@ -67,7 +67,7 @@ static_resources:
             - endpoint:
                 address:
                   pipe:
-                    path: /tmp/spire-agent/public/api.sock
+                    path: /home/vcap/deps/{{ .Idx }}/spire-agent/public/api.sock
   - name: service_mtls
     connect_timeout: 0.25s
     lb_policy: CLUSTER_PROVIDED
