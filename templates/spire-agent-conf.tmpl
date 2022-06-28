@@ -3,7 +3,7 @@ agent {
   server_port       = {{ .SpireServerPort }}
   log_level         = "DEBUG"
   trust_domain      = "{{ .TrustDomain }}"
-  trust_bundle_path = "bundle.crt"
+  trust_bundle_path = "/home/vcap/deps/0/certificates/bundle.crt"
 }
 
 plugins {

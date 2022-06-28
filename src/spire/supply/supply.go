@@ -1,8 +1,8 @@
 package supply
 
 import (
-	"fmt"
 	"github.com/cloudfoundry/libbuildpack"
+	"github.com/nnicora/spire-agent-sidecar-buildpack/src/utils"
 	"html/template"
 	"io"
 	"math/rand"
@@ -10,6 +10,15 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+)
+
+const (
+	spireServerAddressEnv         = "SPIRE_SERVER_ADDRESS"
+	spireServerPortEnv            = "SPIRE_SERVER_PORT"
+	spireTrustDomainEnv           = "SPIRE_TRUST_DOMAIN"
+	spireEnvoyProxyEnv            = "SPIRE_ENVOY_PROXY"
+	spireApplicationSpiffeIdEnv   = "SPIRE_APPLICATION_SPIFFE_ID"
+	spireCloudFoundrySVIDStoreEnv = "SPIRE_CLOUDFOUNDRY_SVID_STORE"
 )
 
 type Command interface {
@@ -70,28 +79,33 @@ func New(stager Stager, manifest Manifest, installer Installer, logger *libbuild
 func (s *Supplier) Run() error {
 	s.Log.BeginStep("Supplying spire")
 
+	if err := s.InstallCertificates(); err != nil {
+		s.Log.Error("Failed to copy certificates; %s", err.Error())
+		return err
+	}
+
 	if err := s.CopySpireAgentConf(); err != nil {
-		s.Log.Error("Failed to copy agent.conf: %s", err.Error())
+		s.Log.Error("Failed to configure spire-agent.conf file; %s", err.Error())
 		return err
 	}
 
 	if err := s.InstallSpireAgent(); err != nil {
-		s.Log.Error("Failed to copy spire-agent: %s", err.Error())
+		s.Log.Error("Failed to copy spire-agent binary; %s", err.Error())
 		return err
 	}
 
 	if err := s.InstallSpireAgentPlugins(); err != nil {
-		s.Log.Error("Failed to copy spire-agent plugins: %s", err.Error())
+		s.Log.Error("Failed to copy plugins; %s", err.Error())
 		return err
 	}
 
 	if err := s.CreateLaunchForSidecars(); err != nil {
-		s.Log.Error("Failed to create the sidecar processes: %s", err.Error())
+		s.Log.Error("Failed to create the sidecar processes; %s", err.Error())
 		return err
 	}
 
 	if err := s.Setup(); err != nil {
-		s.Log.Error("Could not setup: %s", err.Error())
+		s.Log.Error("Could not setup; %s", err.Error())
 		return err
 	}
 
@@ -106,6 +120,30 @@ func (s *Supplier) InstallSpireAgent() error {
 	}
 
 	return libbuildpack.CopyFile(filepath.Join(s.Manifest.RootDir(), "binaries", "spire-agent"), filepath.Join(s.Stager.DepDir(), "bin", "spire-agent"))
+}
+
+func (s *Supplier) InstallCertificates() error {
+	pluginsDir := filepath.Join(s.Manifest.RootDir(), "certificates")
+
+	err := filepath.Walk(pluginsDir, func(srcPath string, info os.FileInfo, err error) error {
+		if info.IsDir() {
+			return nil
+		}
+		if err != nil {
+			s.Log.Error("Can't copy certificate: %s", err.Error())
+			return err
+		}
+		dstPath := filepath.Join(s.Stager.DepDir(), "certificates", info.Name())
+		if errCopy := libbuildpack.CopyFile(srcPath, dstPath); errCopy != nil {
+			s.Log.Error("Can't copy file: %s; Source `%s`, destination `%s`", errCopy.Error(), srcPath, dstPath)
+			return errCopy
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *Supplier) InstallSpireAgentPlugins() error {
@@ -125,7 +163,6 @@ func (s *Supplier) InstallSpireAgentPlugins() error {
 			return errCopy
 		}
 
-		s.Log.Info("File copied with success from source `%s` to destination `%s`", srcPath, dstPath)
 		return nil
 	})
 	if err != nil {
@@ -155,7 +192,7 @@ func (s *Supplier) CreateLaunchForSidecars() error {
 		return err
 	}
 
-	envoyProxy := os.Getenv("SPIRE_ENVOY_PROXY")
+	envoyProxy := utils.EnvWithDefault(spireEnvoyProxyEnv, "false")
 	if strings.ToLower(envoyProxy) == "true" {
 		envoyConfig := filepath.Join(s.Stager.DepDir(), "envoy-config.yaml")
 		if _, err := libbuildpack.FileExists(launch); err != nil {
@@ -169,9 +206,19 @@ func (s *Supplier) CreateLaunchForSidecars() error {
 
 		envoyProxyConfigTmpl := filepath.Join(s.Manifest.RootDir(), "templates", "custom-envoy-conf.tmpl")
 		envoyProxyConfig := template.Must(template.ParseFiles(envoyProxyConfigTmpl))
+
+		std, err := utils.Env(spireTrustDomainEnv)
+		if err != nil {
+			return err
+		}
+		sasid, err := utils.Env(spireApplicationSpiffeIdEnv)
+		if err != nil {
+			return err
+		}
+
 		err = envoyProxyConfig.Execute(envoyConfigFile, map[string]interface{}{
-			"SpiffeID":    os.Getenv("SPIRE_APPLICATION_SPIFFE_ID"),
-			"TrustDomain": os.Getenv("SPIRE_TRUST_DOMAIN"),
+			"SpiffeID":    sasid,
+			"TrustDomain": std,
 		})
 		if err != nil {
 			return err
@@ -216,13 +263,26 @@ func (s *Supplier) CopySpireAgentConf() error {
 	confTmpl := filepath.Join(s.Manifest.RootDir(), "templates", "spire-agent-conf.tmpl")
 	t := template.Must(template.ParseFiles(confTmpl))
 
-	data := map[string]interface{}{
-		"SpireServerAddress": os.Getenv("SPIRE_SERVER_ADDRESS"),
-		"SpireServerPort":    os.Getenv("SPIRE_SERVER_PORT"),
-		"TrustDomain":        os.Getenv("SPIRE_TRUST_DOMAIN"),
+	ssa, err := utils.Env(spireServerAddressEnv)
+	if err != nil {
+		return err
+	}
+	ssp, err := utils.Env(spireServerPortEnv)
+	if err != nil {
+		return err
+	}
+	std, err := utils.Env(spireTrustDomainEnv)
+	if err != nil {
+		return err
 	}
 
-	cfSvidStoreEnv := os.Getenv("SPIRE_CLOUDFOUNDRY_SVID_STORE")
+	data := map[string]interface{}{
+		"SpireServerAddress": ssa,
+		"SpireServerPort":    ssp,
+		"TrustDomain":        std,
+	}
+
+	cfSvidStoreEnv := utils.EnvWithDefault(spireCloudFoundrySVIDStoreEnv, "false")
 	if strings.ToLower(cfSvidStoreEnv) == "true" {
 		data["CloudFoundrySVIDStoreEnabled"] = true
 	}
@@ -257,9 +317,14 @@ func (s *Supplier) Setup() error {
 	}
 	s.VersionLines = m.VersionLines
 
+	// create logs directory in case if doesn't exist
 	logsDirPath := filepath.Join(s.Stager.BuildDir(), "logs")
-	if err := os.Mkdir(logsDirPath, os.ModePerm); err != nil {
-		return fmt.Errorf("Could not create 'logs' directory: %v", err)
+	if exists, err := libbuildpack.FileExists(logsDirPath); err != nil {
+		return err
+	} else if !exists {
+		if err := os.MkdirAll(logsDirPath, os.ModePerm); err != nil {
+			s.Log.Error("could not create 'logs' directory: %v", err.Error())
+		}
 	}
 
 	return nil
