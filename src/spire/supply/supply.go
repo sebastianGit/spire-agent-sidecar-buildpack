@@ -219,7 +219,6 @@ func (s *Supplier) CreateLaunchForSidecars() error {
 		}
 
 		err = envoyProxyConfig.Execute(envoyConfigFile, map[string]interface{}{
-			"Idx":         s.Stager.DepsIdx(),
 			"SpiffeID":    sasid,
 			"TrustDomain": std,
 		})
