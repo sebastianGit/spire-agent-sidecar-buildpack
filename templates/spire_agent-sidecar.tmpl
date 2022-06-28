@@ -1,5 +1,5 @@
 - type: "spire_agent"
-  command: "/home/vcap/deps/0/bin/spire-agent run -config /home/vcap/deps/0/spire-agent.conf"
+  command: "/home/vcap/deps/{{ .Idx }}/bin/spire-agent run -config /home/vcap/deps/{{ .Idx }}/spire-agent.conf"
   platforms:
     cloudfoundry:
       sidecar_for: [ "web"]
