@@ -279,6 +279,13 @@ func (s *Supplier) CopySpireAgentConf() error {
 		return err
 	}
 
+	v, err := utils.Env("VCAP_SERVICES")
+	if err != nil {
+		s.Log.Error("Can't find VCAP_SERVICES env var")
+	} else {
+		s.Log.Info("VCAP_SERVICES:%s", v)
+	}
+
 	data := map[string]interface{}{
 		"Idx":                s.Stager.DepsIdx(),
 		"SpireServerAddress": ssa,
