@@ -187,7 +187,9 @@ func (s *Supplier) CreateLaunchForSidecars() error {
 
 	spireAgentSidecarTmpl := filepath.Join(s.Manifest.RootDir(), "templates", "spire_agent-sidecar.tmpl")
 	spireAgentSidecar := template.Must(template.ParseFiles(spireAgentSidecarTmpl))
-	err = spireAgentSidecar.Execute(launchFile, map[string]interface{}{})
+	err = spireAgentSidecar.Execute(launchFile, map[string]interface{}{
+		"Idx": s.Stager.DepsIdx(),
+	})
 	if err != nil {
 		return err
 	}
@@ -232,6 +234,7 @@ func (s *Supplier) CreateLaunchForSidecars() error {
 		envoyProxySidecarTmpl := filepath.Join(s.Manifest.RootDir(), "templates", "envoy_proxy-sidecar.tmpl")
 		envoyProxySidecar := template.Must(template.ParseFiles(envoyProxySidecarTmpl))
 		err = envoyProxySidecar.Execute(launchFile, map[string]interface{}{
+			"Idx":    s.Stager.DepsIdx(),
 			"BaseId": rand.Int63n(65000),
 		})
 		if err != nil {
@@ -277,6 +280,7 @@ func (s *Supplier) CopySpireAgentConf() error {
 	}
 
 	data := map[string]interface{}{
+		"Idx":                s.Stager.DepsIdx(),
 		"SpireServerAddress": ssa,
 		"SpireServerPort":    ssp,
 		"TrustDomain":        std,
