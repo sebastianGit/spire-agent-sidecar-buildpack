@@ -20,18 +20,18 @@ func VCAP(key string) (string, error) {
 		return "", err
 	}
 
-	data := VcapServices{}
-	err = json.Unmarshal([]byte(v), &data)
+	data := &VcapServices{}
+	err = json.Unmarshal([]byte(v), data)
 	if err != nil {
 		return "", err
 	}
 
 	for _, up := range data.UserProvided {
 		if keyValue, keyExist := up.Credentials[key]; keyExist {
-			return strings.TrimSpace(keyValue.(string)), nil
+			return keyValue.(string), nil
 		}
 		if keyValue, keyExist := up.Credentials[strings.ToLower(key)]; keyExist {
-			return strings.TrimSpace(keyValue.(string)), nil
+			return keyValue.(string), nil
 		}
 	}
 
