@@ -7,7 +7,7 @@ import (
 )
 
 type VcapServices struct {
-	UserProvided UserProvided `json:"user_provided"`
+	UserProvided []UserProvided `json:"user_provided"`
 }
 
 type UserProvided struct {
@@ -26,11 +26,13 @@ func VCAP(key string) (string, error) {
 		return "", err
 	}
 
-	if keyValue, keyExist := data.UserProvided.Credentials[key]; keyExist {
-		return strings.TrimSpace(keyValue), nil
-	}
-	if keyValue, keyExist := data.UserProvided.Credentials[strings.ToLower(key)]; keyExist {
-		return strings.TrimSpace(keyValue), nil
+	for _, up := range data.UserProvided {
+		if keyValue, keyExist := up.Credentials[key]; keyExist {
+			return strings.TrimSpace(keyValue), nil
+		}
+		if keyValue, keyExist := up.Credentials[strings.ToLower(key)]; keyExist {
+			return strings.TrimSpace(keyValue), nil
+		}
 	}
 
 	return "", fmt.Errorf("can't find `%s` environment variable", key)

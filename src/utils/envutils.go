@@ -23,8 +23,8 @@ func EnvWithDefault(key string, defValue string) string {
 }
 
 func VcapOrEnv(key string) (string, error) {
-	value, _ := VCAP(key)
-	if value == "" {
+	value, err := VCAP(key)
+	if err != nil {
 		return Env(key)
 	}
 	return value, nil
