@@ -11,7 +11,7 @@ type VcapServices struct {
 }
 
 type UserProvided struct {
-	Credentials map[string]string `json:"credentials"`
+	Credentials map[string]interface{} `json:"credentials"`
 }
 
 func VCAP(key string) (string, error) {
@@ -28,10 +28,10 @@ func VCAP(key string) (string, error) {
 
 	for _, up := range data.UserProvided {
 		if keyValue, keyExist := up.Credentials[key]; keyExist {
-			return strings.TrimSpace(keyValue), nil
+			return strings.TrimSpace(keyValue.(string)), nil
 		}
 		if keyValue, keyExist := up.Credentials[strings.ToLower(key)]; keyExist {
-			return strings.TrimSpace(keyValue), nil
+			return strings.TrimSpace(keyValue.(string)), nil
 		}
 	}
 
