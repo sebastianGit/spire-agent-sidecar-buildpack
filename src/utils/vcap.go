@@ -35,5 +35,5 @@ func VCAP(key string) (string, error) {
 		}
 	}
 
-	return "", fmt.Errorf("can't find `%s` environment variable", key)
+	return "", fmt.Errorf("VCAP can't find `%s` or `%s` variable", key, strings.ToLower(key))
 }
