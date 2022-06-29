@@ -23,11 +23,7 @@ func EnvWithDefault(key string, defValue string) string {
 }
 
 func VcapOrEnv(key string) (string, error) {
-	value, err := VCAP(key)
-	if err != nil {
-		return Env(key)
-	}
-	return value, nil
+	return VCAP(key)
 }
 func Env(key string) (string, error) {
 	value := strings.TrimSpace(os.Getenv(key))
