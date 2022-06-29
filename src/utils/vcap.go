@@ -11,6 +11,7 @@ type VcapServices struct {
 }
 
 type UserProvided struct {
+	_           interface{}            `json:"-"`
 	Credentials map[string]interface{} `json:"credentials"`
 }
 
