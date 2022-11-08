@@ -3,7 +3,7 @@ agent {
   server_port       = {{ .SpireServerPort }}
   log_level         = "DEBUG"
   trust_domain      = "{{ .TrustDomain }}"
-  trust_bundle_url  = "https://aia.pki.co.sap.com/aia/SAP%20Cloud%20Root%20CA.crt"
+  trust_bundle_path = "/home/vcap/deps/{{ .Idx }}/certificates/bundle.crt"
 }
 
 plugins {
