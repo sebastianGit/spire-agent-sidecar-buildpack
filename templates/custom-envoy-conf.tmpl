@@ -83,32 +83,17 @@ static_resources:
       typed_config:
         "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
         common_tls_context:
+          validation_context:
+            trusted_ca:
+              filename: "/etc/certificates/blueprint-ca.crt"
           tls_certificate_sds_secret_configs:
             - name: "{{ .SpiffeID }}"
               sds_config:
                 resource_api_version: V3
                 api_config_source:
                   api_type: GRPC
+                  set_node_on_first_message_only: true
                   transport_api_version: V3
                   grpc_services:
                     - envoy_grpc:
                         cluster_name: spire_agent
-          combined_validation_context:
-            # validate the SPIFFE ID of incoming clients (optionally)
-            default_validation_context:
-              match_subject_alt_names:
-#              - exact: ""
-            # obtain the trust bundle from SDS
-            validation_context_sds_secret_config:
-              name: "spiffe://{{ .TrustDomain }}"
-              sds_config:
-                resource_api_version: V3
-                api_config_source:
-                  api_type: GRPC
-                  transport_api_version: V3
-                  grpc_services:
-                    - envoy_grpc:
-                        cluster_name: spire_agent
-          tls_params:
-            ecdh_curves:
-              - X25519:P-256:P-521:P-384
