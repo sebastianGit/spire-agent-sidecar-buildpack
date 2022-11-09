@@ -85,7 +85,7 @@ static_resources:
         common_tls_context:
           validation_context:
             trusted_ca:
-              filename: "/etc/certificates/blueprint-ca.crt"
+              filename: "/home/vcap/deps/{{ .Idx }}/certificates/blueprint-ca.crt"
           tls_certificate_sds_secret_configs:
             - name: "{{ .SpiffeID }}"
               sds_config:
