@@ -96,6 +96,11 @@ static_resources:
                     - envoy_grpc:
                         cluster_name: spire_agent
           combined_validation_context:
+            # validate the SPIFFE ID of incoming clients (optionally)
+            default_validation_context:
+              match_subject_alt_names:
+#              - exact: ""
+            # obtain the trust bundle from SDS
             validation_context_sds_secret_config:
               name: "spiffe://{{ .TrustDomain }}"
               sds_config:
