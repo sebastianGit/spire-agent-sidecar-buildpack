@@ -29,22 +29,17 @@ static_resources:
               forward_client_cert_details: sanitize_set
               set_current_client_cert_details:
                 uri: true
-                cert: true
-                chain: true
               codec_type: auto
               access_log:
                 - name: envoy.access_loggers.stdout
                   typed_config:
-                    "@type": type.googleapis.com/envoy.extensions.access_loggers.file.v3.FileAccessLog
-                    path: /dev/stdout
-                    format: "[%START_TIME%] \"%REQ(:METHOD)% %REQ(X-ENVOY-ORIGINAL-PATH?:PATH)% %PROTOCOL%\" %RESPONSE_CODE% %RESPONSE_FLAGS% %BYTES_RECEIVED% %BYTES_SENT% %DURATION% %RESP(X-ENVOY-UPSTREAM-SERVICE-TIME)% \"%REQ(X-FORWARDED-FOR)%\" \"%REQ(USER-AGENT)%\" \"%REQ(X-REQUEST-ID)%\" \"%REQ(:AUTHORITY)%\" \"%UPSTREAM_HOST%\" \"%DOWNSTREAM_REMOTE_ADDRESS_WITHOUT_PORT%\"\n"
+                    "@type": type.googleapis.com/envoy.extensions.access_loggers.stream.v3.StdoutAccessLog
               stat_prefix: ingress_http
               route_config:
                 name: local_route
                 virtual_hosts:
                   - name: outbound_proxy
                     domains: ["*"]
-                    require_tls: ALL
                     routes:
                       - match:
                           prefix: "/"
@@ -62,7 +57,7 @@ static_resources:
                     dns_lookup_family: V4_ONLY
               - name: envoy.filters.http.router
                 typed_config:
-                  "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
+                "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
   clusters:
   - name: spire_agent
     connect_timeout: 0.25s
@@ -90,16 +85,23 @@ static_resources:
       typed_config:
         "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
         common_tls_context:
-          validation_context:
-            trusted_ca:
-              filename: "/home/vcap/deps/{{ .Idx }}/certificates/blueprint-ca.crt"
           tls_certificate_sds_secret_configs:
             - name: "{{ .SpiffeID }}"
               sds_config:
                 resource_api_version: V3
                 api_config_source:
                   api_type: GRPC
-                  set_node_on_first_message_only: true
+                  transport_api_version: V3
+                  grpc_services:
+                    - envoy_grpc:
+                        cluster_name: spire_agent
+          combined_validation_context:
+            validation_context_sds_secret_config:
+              name: "spiffe://{{ .TrustDomain }}"
+              sds_config:
+                resource_api_version: V3
+                api_config_source:
+                  api_type: GRPC
                   transport_api_version: V3
                   grpc_services:
                     - envoy_grpc:
