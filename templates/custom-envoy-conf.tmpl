@@ -57,7 +57,7 @@ static_resources:
                     dns_lookup_family: V4_ONLY
               - name: envoy.filters.http.router
                 typed_config:
-                "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
+                  "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
   clusters:
   - name: spire_agent
     connect_timeout: 0.25s
