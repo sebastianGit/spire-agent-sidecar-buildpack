@@ -161,6 +161,8 @@ func (s *Supplier) InstallSpireAgentPlugins() error {
 		if errCopy := libbuildpack.CopyFile(srcPath, dstPath); errCopy != nil {
 			s.Log.Error("Can't copy file: %s; Source `%s`, destination `%s`", errCopy.Error(), srcPath, dstPath)
 			return errCopy
+		} else {
+			s.Log.Error("Copy file from Source `%s`, destination `%s`", srcPath, dstPath)
 		}
 
 		return nil
