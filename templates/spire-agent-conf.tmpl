@@ -12,7 +12,7 @@ plugins {
   }
 
   NodeAttestor "cf_iic" {
-    plugin_cmd = "/home/vcap/deps/{{ .Idx }}/bin/cs_iic"
+    plugin_cmd = "/home/vcap/deps/{{ .Idx }}/bin/cf_iic"
     plugin_data {
       landscape = "cf-eu10"
       private_key_path = "/etc/cf-instance-credentials/instance.key"
