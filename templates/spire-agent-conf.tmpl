@@ -11,8 +11,7 @@ plugins {
     plugin_data {}
   }
 
-  NodeAttestor "cf_iic" {
-    plugin_cmd = "/home/vcap/deps/{{ .Idx }}/bin/cf_iic"
+  NodeAttestor "x508pop" {
     plugin_data {
       private_key_path = "/etc/cf-instance-credentials/instance.key"
       certificate_path = "/etc/cf-instance-credentials/instance.crt"
