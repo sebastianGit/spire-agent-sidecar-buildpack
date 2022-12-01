@@ -162,7 +162,7 @@ func (s *Supplier) InstallSpireAgentPlugins() error {
 			s.Log.Error("Can't copy file: %s; Source `%s`, destination `%s`", errCopy.Error(), srcPath, dstPath)
 			return errCopy
 		} else {
-			s.Log.Error("Copy file from Source `%s`, destination `%s`", srcPath, dstPath)
+			s.Log.Info("Copy file from Source `%s`, destination `%s`", srcPath, dstPath)
 		}
 
 		return nil
