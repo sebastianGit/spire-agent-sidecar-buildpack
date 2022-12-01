@@ -22,7 +22,6 @@ plugins {
   {{if .CloudFoundrySVIDStoreEnabled}}
   SVIDStore "cf" {
       plugin_cmd = "/home/vcap/deps/{{ .Idx }}/bin/svidstore-cf"
-      plugin_checksum = "7bad16b930e3adbda1d6bb4ba0d234bfbd9d9e95d47a5ca6efc6f8b9aa72f18e"
       plugin_data {
           write_path = "/tmp/spire-agent"
       }
