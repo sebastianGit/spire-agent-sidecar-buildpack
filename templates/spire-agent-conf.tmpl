@@ -21,7 +21,7 @@ plugins {
 
   {{if .CloudFoundrySVIDStoreEnabled}}
   SVIDStore "cf" {
-      plugin_cmd = "/home/vcap/deps/{{ .Idx }}/bin/svidstore-cf"
+      plugin_cmd = "/home/vcap/deps/{{ .Idx }}/bin/svidstore_file"
       plugin_data {
           write_path = "/tmp/spire-agent"
       }
