@@ -89,8 +89,13 @@ func (s *Supplier) Run() error {
 		return err
 	}
 
-	if err := s.InstallSpireAgent(); err != nil {
-		s.Log.Error("Failed to copy spire-agent binary; %s", err.Error())
+	if err := s.InstallBinary("spire-agent"); err != nil {
+		s.Log.Error("Failed to copy `spire-agent` binary; %s", err.Error())
+		return err
+	}
+
+	if err := s.InstallBinary("svid-file.sh"); err != nil {
+		s.Log.Error("Failed to copy `svid-file.sh` binary; %s", err.Error())
 		return err
 	}
 
@@ -112,14 +117,14 @@ func (s *Supplier) Run() error {
 	return nil
 }
 
-func (s *Supplier) InstallSpireAgent() error {
-	if exists, err := libbuildpack.FileExists(filepath.Join(s.Stager.DepDir(), "bin", "spire-agent")); err != nil {
+func (s *Supplier) InstallBinary(name string) error {
+	if exists, err := libbuildpack.FileExists(filepath.Join(s.Stager.DepDir(), "bin", name)); err != nil {
 		return err
 	} else if exists {
 		return nil
 	}
 
-	return libbuildpack.CopyFile(filepath.Join(s.Manifest.RootDir(), "binaries", "spire-agent"), filepath.Join(s.Stager.DepDir(), "bin", "spire-agent"))
+	return libbuildpack.CopyFile(filepath.Join(s.Manifest.RootDir(), "binaries", name), filepath.Join(s.Stager.DepDir(), "bin", name))
 }
 
 func (s *Supplier) InstallCertificates() error {
