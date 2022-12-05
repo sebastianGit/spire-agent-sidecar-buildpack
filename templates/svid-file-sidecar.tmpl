@@ -1,0 +1,5 @@
+- type: "spire_agent"
+  command: "/home/vcap/deps/{{ .Idx }}/bin/svid-file.sh"
+  platforms:
+    cloudfoundry:
+      sidecar_for: [ "web"]

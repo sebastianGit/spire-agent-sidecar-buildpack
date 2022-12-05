@@ -245,6 +245,18 @@ func (s *Supplier) CreateLaunchForSidecars() error {
 		}
 	}
 
+	svidFile := utils.EnvWithDefault(spireCloudFoundrySVIDStoreEnv, "false")
+	if strings.ToLower(svidFile) == "true" {
+		svidFileSidecarTmpl := filepath.Join(s.Manifest.RootDir(), "templates", "svid-file-sidecar.tmpl")
+		svidFileSidecar := template.Must(template.ParseFiles(svidFileSidecarTmpl))
+		err = svidFileSidecar.Execute(launchFile, map[string]interface{}{
+			"Idx": s.Stager.DepsIdx(),
+		})
+		if err != nil {
+			return err
+		}
+	}
+
 	err = launchFile.Close()
 	if err != nil {
 		return err
